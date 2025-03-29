@@ -1,0 +1,19 @@
+.logo {
+  display: flex;
+}
+.logoname {
+  color: white;
+  font-size: 23px;
+  margin: 0px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logoname span {
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+  background-color: white;
+  color: rgba(24, 77, 138, 1);
+}
