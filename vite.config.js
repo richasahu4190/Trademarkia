@@ -15,12 +15,14 @@ export default defineConfig({
       services: "/src/services",
       api: "/src/services/api",
       config: "/src/config",
-      screens: "/src/screens", // Corrected alias
+      screens: "/src/screens",
     },
+  },
+  build: {
+    outDir: "build", // Change the output directory to 'build'
   },
   plugins: [react(), vitePluginRequire.default()],
   server: {
-    port: 3001 // Change to your desired port
-  }
-
+    port: 3001, // Change to your desired port
+  },
 });
