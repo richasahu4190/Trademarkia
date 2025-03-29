@@ -16,7 +16,7 @@ const columns = [
         <Avatar
           src="/src/assets/avtar.png" // Placeholder image, replace with actual
           variant="square"
-          sx={{ width: 200, height: 300, borderRadius: 2 }}
+          sx={{ width: 100, height: 100, borderRadius: 2 }}
         />
       </div>
     ),
