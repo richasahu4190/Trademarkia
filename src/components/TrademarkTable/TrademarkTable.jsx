@@ -14,9 +14,9 @@ const columns = [
     renderCell: (params) => (
       <div className="flex justify-center items-center">
         <Avatar
-          src="/src/assets/avtar.png" // Placeholder image, replace with actual
+          src={require("/src/assets/avtar.png" )}// Placeholder image, replace with actual
           variant="square"
-          sx={{ width: 100, height: 100, borderRadius: 2 }}
+          sx={{ width: 300, height: 300, borderRadius: 2 }}
         />
       </div>
     ),
@@ -45,18 +45,31 @@ const columns = [
     headerAlign: "center",
     flex: 1,
     renderCell: (params) => (
+      
       <div className="w-full h-full flex flex-col justify-between items-center p-2">
-        <div className="flex flex-col items-center">
-          <div className="text-[#41B65C] font-semibold text-[1rem]">
-            ● Live / Registered
-          </div>
-          <div className="text-gray-500">on {params.row.registrationDate}</div>
+      {console.log(params.row.status)}
+    
+      <div className="flex flex-col items-center">
+        <div className={`font-semibold text-[.9rem] flex gap-x-1 items-center ${
+          params.row.status === 'Registered'
+            ? 'text-[#41B65C]'  // green
+            : params.row.status === 'Pending'
+            ? 'text-yellow-500' // yellow
+            : params.row.status === 'Abandoned'
+            ? 'text-red-500'    // red
+            : 'text-blue-500'   // default blue
+        }`}>
+        <span className="text-2xl"> •</span> {params.row.status.charAt(0).toUpperCase() + params.row.status.slice(1)}
         </div>
-        <div className="flex font-semibold">
-          <Sync fontSize="small" sx={{ mr: 0.5, color: "#EC4A4A" }} />{" "}
-          {params.row.expiryDate}
-        </div>
+        <div className="text-gray-500">on {params.row.registrationDate}</div>
       </div>
+    
+      <div className="flex font-semibold">
+        <Sync fontSize="small" sx={{ mr: 0.5, color: "#EC4A4A" }} />
+        {params.row.expiryDate}
+      </div>
+    </div>
+    
     ),
   },
   {
@@ -121,6 +134,7 @@ const TrademarkTable = observer(() => {
     classCodes: hit.source.class_codes || [],
     classDescription:
       hit.source.mark_description_description?.join(", ").slice(0, 60) || "N/A",
+    status:   hit.source.status_type.charAt(0).toUpperCase() + hit.source.status_type.slice(1)
   }));
 
   return (
