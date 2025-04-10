@@ -10,6 +10,7 @@ import Logo from "assets/Logo.png";
 
 import { MSTStoreContext } from "mst/store";
 import TrademarkTable from "components/TrademarkTable/TrademarkTable";
+import TrademarkGrid from "components/TrademarkGridView/TrademarkGridView";
 
 const Landing = observer(() => {
   const { applicationStore } = useContext(MSTStoreContext);
@@ -22,7 +23,9 @@ const Landing = observer(() => {
   const [selectedOwner, setSelectedOwner] = useState("Tesla, Inc.");
   const [view, setView] = useState("grid");
   const [activeTab, setActiveTab] = useState('owners');
-  const [searchInput, setSearchInput] = useState(""); // New state for search input
+  const [searchInput, setSearchInput] = useState("");
+  const [ searchClick,setSearchClick] =useState(false);
+  const [filter,setFilter]=useState(false)// New state for search input
   
   const [searchParams, setSearchParams] = useState({
     input_query: "nike",
@@ -40,7 +43,8 @@ const Landing = observer(() => {
 
   // Handler functions
   const handleInputQueryChange = (e) => {
-    setSearchInput(e.target.value); // Update search input state
+    setSearchInput(e.target.value);
+    setSearchClick(false) // Update search input state
   };
 
   const handleSearch = () => {
@@ -50,6 +54,7 @@ const Landing = observer(() => {
       input_query: searchInput , // Use search input or default to "nike"
       page: 1 // Reset to first page on new search
     }));
+    setSearchClick(true)
     // Simulate API call
     setTimeout(() => setIsLoading(false), 1000);
   };
@@ -59,7 +64,7 @@ const Landing = observer(() => {
       ...prev,
       status: prev.status.includes(status)
         ? prev.status.filter(s => s !== status)
-        : [...prev.status, status]
+        : [ ...prev.status,status]
     }));
   };
 
@@ -132,10 +137,11 @@ const postSearch=async()=>{
 
       <div className="bg-no-repeat bg-right pb-5 h-full" id="landing">
         <div className={`flex flex-col w-[97%] h-[5rem] mx-4 font-semibold text-gray-600 m-4 justify-between px-8 `}>
-       { searchInput && <p>About 159 Trademarks found for "{searchParams.input_query}"</p>}
-          <hr className="h-6 w-full text-[#E7E6E6] mt-4 mb-4" />
-          <div className={`flex items-center  p-2 w-full ${searchInput?"justify-between":"justify-end"}`}>
-           { searchInput && <div className="flex items-center gap-2">
+       {  searchClick && <><p>About {197} Trademarks found for "{searchParams.input_query}"</p>
+          <hr className="h-6 w-full text-[#E7E6E6] mt-4 mb-4" /></>
+        }
+          <div className={`flex items-center  p-2 w-full ${searchClick?"justify-between":"justify-end"}`}>
+           {  searchClick && <div className="flex items-center gap-2">
               <span className="text-black">Also try searching for</span>
               <div className="flex gap-2">
                 <button
@@ -143,6 +149,7 @@ const postSearch=async()=>{
                   onClick={() => {
                     setSearchInput(`${searchParams.input_query}*`);
                     handleSearch();
+                   
                   }}
                 >
                   {searchParams.input_query}*
@@ -159,7 +166,12 @@ const postSearch=async()=>{
               </div>
             </div>}
             <div className="flex items-center gap-3">
-              <button className="border border-gray-700 text-black px-3 py-1 rounded-md flex items-center gap-1">
+              <button onClick={()=>{
+                if(filter)
+                setFilter(false)
+              else
+              setFilter(true)
+              }} className="border border-gray-700 text-black px-3 py-1 rounded-md flex items-center gap-1">
                 <FiFilter className="text-gray-700" />
                 Filter
               </button>
@@ -186,10 +198,11 @@ const postSearch=async()=>{
               />
             ) : (
               <div className="flex flex-row justify-between text-gray-500 w-full p-4 px-8">
-                <div className="w-[75%] p-4">
-                  <TrademarkTable searchParams={searchParams} />
+                <div className={`${filter?"w-[75%]":"w-full"} p-4`}>
+                 { true?<TrademarkTable searchParams={searchParams} />
+                 : <TrademarkGrid/>}
                 </div>
-                <div className="w-[25%] flex flex-col gap-y-5 p-4">
+               { filter&&<div className="w-[25%] flex flex-col gap-y-5 p-4">
                   <div className="bg-white p-5 rounded-xl shadow-customShadow5 w-full">
                     <h3 className="text-lg font-semibold mb-3">Status</h3>
                     <div className="flex flex-wrap gap-2">
@@ -199,13 +212,13 @@ const postSearch=async()=>{
                       >
                         All
                       </button>
-                      {['Registered', 'Pending', 'Abandoned', 'Others'].map(status => (
+                      {['registered', 'pending', 'abandoned', 'others'].map(status => (
                         <button
                           key={status}
                           className={`px-3 py-1 border rounded-md text-sm flex items-center gap-2 ${searchParams.status.includes(status) ? 'bg-blue-100 text-blue-600' : ''}`}
                           onClick={() => handleStatusChange(status)}
                         >
-                          <span className={`w-2 h-2 rounded-full ${status === 'Registered' ? 'bg-green-500' : status === 'Pending' ? 'bg-yellow-500' : status === 'Abandoned' ? 'bg-red-500' : 'bg-blue-500'}`}></span>
+                          <span className={`w-2 h-2 rounded-full ${status === 'registered' ? 'bg-green-500' : status === 'pending' ? 'bg-yellow-500' : status === 'abandoned' ? 'bg-red-500' : 'bg-blue-500'}`}></span>
                           {status}
                         </button>
                       ))}
@@ -325,7 +338,7 @@ const postSearch=async()=>{
                       </button>
                     </div>
                   </div>
-                </div>
+                </div>}
               </div>
             )}
           </div>
